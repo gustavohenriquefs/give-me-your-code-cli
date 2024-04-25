@@ -1,12 +1,11 @@
-import Conf from 'conf';
+
+import { conf } from './index.js';
 import chalk from 'chalk';
 import { templateList } from '../db/templates.js';
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
+import tmp, { file } from 'tmp';
 import fs from 'fs/promises';
-
-const conf = new Conf({ projectName: 'give-me-your-code-cli' });
-const rootPath = './temp';
-const filePath = `${rootPath}/new-template-file.cpp`;
+import child_process from 'child_process';
 
 const templateListKey = 'templates'
 
@@ -21,7 +20,6 @@ import inquirer from 'inquirer';
 function create() {
   selectCodeEditor();
 }
-
 
 function getEditors() {
   return [
@@ -38,8 +36,71 @@ function getEditors() {
   ]
 }
 
-function getFolderOfNewTemplate(templateName) {
-  // pegar dados dos folter em path ./temp
+function spawnVimEditor(filePath) {
+  return spawn('vim', [filePath], {
+    stdio: 'inherit'
+  });
+}
+
+function saveTemplate(fileData) {
+  templateList.push({
+    name: 'new-template',
+    description: 'New Template',
+    files: [
+      {
+        name: 'main.cpp',
+        content: fileData
+      }
+    ]
+  });
+
+  conf.set(templateListKey, templateList);
+  const templateListConf = conf.get('templates')
+  console.log(templateListConf);
+}
+
+function processFileDataVim(filePath, cleanupCallback) {
+  fs.readFile(filePath, 'utf8')
+    .then((data) => {
+      saveTemplate(data);
+    })
+    .catch((err) => {
+      console.log(chalk.red('An error occurred: ', err));
+    })  
+    .finally(() => {
+      console.log(chalk.green.bold('File saved!'));
+
+      cleanupCallback();
+    });
+}
+
+function closeEditedFileVim(childProcess, filePath, cleanupCallback) {
+  childProcess.on('exit', (e, code) => {
+    processFileDataVim(filePath, cleanupCallback);
+  });
+}
+
+function createTemplateInVim() {
+  tmp.file((err, filePath, fd, cleanupCallback) => {
+    if(err) {
+      console.log(chalk.red('An error occurred: ', err))
+      return
+    }
+
+    const child = spawnVimEditor(filePath);
+
+    closeEditedFileVim(child, filePath, cleanupCallback);
+  });
+}
+
+function redirectToVsCode() {
+  const child = child_process.spawn('code', ['./tmp/template.cpp'], {
+    stdio: 'inherit'
+  });
+
+  child.on('exit', (e, code) => {
+    console.log(chalk.blue.bold('Redirecting to VS Code...'));
+  });
 }
 
 function openSelectedEditor(editorName) {
@@ -52,21 +113,10 @@ function openSelectedEditor(editorName) {
     return
   }
 
-  const command = `${editorData.command} ${filePath}`
-
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.log(chalk.red(`error: ${error.message}`))
-      return;
-    }
-
-    if (stderr) {
-      console.log(chalk.red(`stderr: ${stderr}`))
-      return;
-    }
-    
-    console.log(`stdout: ${stdout}`)
-  })
+  if(editorData.editor === 'vim') 
+    createTemplateInVim();
+  else if(editorData.editor === 'vscode') 
+    redirectToVsCode();
 
   if(editorData.needSaveCommand) {
     console.log(

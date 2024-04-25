@@ -1,8 +1,6 @@
-import Conf from 'conf';
+import { conf } from './index.js';
 import chalk from 'chalk';
 import { templateList } from '../db/templates.js';
-
-const conf = new Conf({ projectName: 'give-me-your-code-cli' });
 
 const templateListKey = 'templates'
 
