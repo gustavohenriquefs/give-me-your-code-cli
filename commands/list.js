@@ -17,7 +17,11 @@ function list() {
 
   if(templateListConf && templateListConf.length) {
     templateListConf.forEach((task, index) => {
-      console.log(`${index + 1}. ${task.name}`);
+      console.log(
+        chalk.blue( 
+        `${index + 1}. ${task.name}`
+        )
+      );
     });
   }
 }
