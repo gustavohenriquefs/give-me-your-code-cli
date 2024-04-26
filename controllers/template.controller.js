@@ -4,26 +4,24 @@ import { createFile } from './file.controller.js'
 async function createTemplate(data) {
   try {
     const files = []
+    let templateCreated = {}
 
-    const templateCreated = await db.Template.create({
+    templateCreated = await db.Template.create({
       name: data.name,
       description: data.description
     })
-    console.log("Values", templateCreated.dataValues.id)
 
-    for(const file of data.files) {
-      const fileCreated = await createFile({
-        name: file.name,
-        content: file.content,
-        templateId: templateCreated.dataValues.id
-      })
+    await Promise.all(data.files.map(async file => {
+      file.templateId = templateCreated.id
 
+      const fileCreated = await createFile(file)
+      
       files.push(fileCreated)
-    }
+    }));
 
-    templateCreated.file = files
+    templateCreated.files = files
 
-    return template
+    return templateCreated
   } catch (error) {
     throw error
   }

@@ -1,4 +1,4 @@
-const Template = (db) => db.sequelize.define('template', {
+const Template = (db) => db.sequelize.define('templates', {
     id: {
         type: db.Sequelize.INTEGER,
         autoIncrement: true,
@@ -7,6 +7,7 @@ const Template = (db) => db.sequelize.define('template', {
     },
     name: {
         type: db.Sequelize.STRING,
+        unique: true,
         allowNull: false
     },
     description: {

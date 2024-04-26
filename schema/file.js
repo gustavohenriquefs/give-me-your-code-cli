@@ -1,18 +1,17 @@
-const File = (db) => db.sequelize.define("file", {
+const File = (db) => db.sequelize.define('files', {
   id: {
     type: db.Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
-    primaryKey: true,
+    primaryKey: true
   },
   templateId: {
     type: db.Sequelize.INTEGER,
     allowNull: false,
-    foreignKey: true,
     references: {
-      model: "template",
-      key: "id",
-    },
+      model: 'templates',
+      key: 'id'
+    }
   },
   name: {
     type: db.Sequelize.STRING,
