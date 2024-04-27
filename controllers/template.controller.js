@@ -2,6 +2,8 @@ import { addFile } from './file.controller.js'
 import { db } from '../db.config.js'
 
 async function addTemplate(data) {
+  const transaction = await db.sequelize.transaction()
+   
   try {
     const files = []
     let templateCreated = {}
@@ -21,8 +23,12 @@ async function addTemplate(data) {
 
     templateCreated.files = files
 
+    await transaction.commit()
+
     return templateCreated
   } catch (error) {
+    await transaction.rollback()
+
     throw error
   }
 }
