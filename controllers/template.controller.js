@@ -11,12 +11,12 @@ async function addTemplate(data) {
     templateCreated = await db.Template.create({
       name: data.name,
       description: data.description
-    })
+    }, { transaction })
 
     await Promise.all(data.files.map(async file => {
       file.templateId = templateCreated.id
 
-      const fileCreated = await addFile(file)
+      const fileCreated = await addFile(file, transaction)
       
       files.push(fileCreated)
     }));
