@@ -1,6 +1,6 @@
 import { db } from '../db.config.js'
 
-async function createFile(data) {
+async function addFile(data) {
   return await db.File.create({
     name: data.name,
     content: data.content,
@@ -12,4 +12,4 @@ async function getFiles() {
   return await db.File.findAll()
 }
 
-export { createFile }
+export { addFile }

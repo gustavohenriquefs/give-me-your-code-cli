@@ -1,29 +1,32 @@
 import { conf } from './index.js';
 import chalk from 'chalk';
-import { templateList } from '../db/templates.js';
+import { getTemplatesNames } from '../controllers/template.controller.js';
+import inquirer from 'inquirer';
 
 const templateListKey = 'templates'
 
-function initTemplateList() {
-  conf.set(templateListKey, templateList);
+async function setTemplateList() {
+  await getTemplatesNames().then(templates => 
+    conf.set(templateListKey, templates)
+  )
 }
 
-initTemplateList()
-
-import inquirer from 'inquirer';
-
 function list() {
-  const templateListConf = conf.get('templates')
+  setTemplateList().then(() => {
+    const templateListConf = conf.get('templates')
 
-  if(templateListConf && templateListConf.length) {
-    templateListConf.forEach((task, index) => {
-      console.log(
-        chalk.blue( 
-        `${index + 1}. ${task.name}`
+    if(templateListConf && templateListConf.length) {
+      templateListConf.forEach((task, index) => {
+        
+        console.log(
+          chalk.blue( 
+          `${index + 1}. ${task.name}`
+          )
         )
-      );
-    });
-  }
+        
+      })
+    }
+  })
 }
 
 function use() {

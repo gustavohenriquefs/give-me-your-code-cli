@@ -1,7 +1,7 @@
+import { addFile } from './file.controller.js'
 import { db } from '../db.config.js'
-import { createFile } from './file.controller.js'
 
-async function createTemplate(data) {
+async function addTemplate(data) {
   try {
     const files = []
     let templateCreated = {}
@@ -14,7 +14,7 @@ async function createTemplate(data) {
     await Promise.all(data.files.map(async file => {
       file.templateId = templateCreated.id
 
-      const fileCreated = await createFile(file)
+      const fileCreated = await addFile(file)
       
       files.push(fileCreated)
     }));
@@ -31,4 +31,10 @@ async function getTemplates() {
   return await db.Template.findAll()
 }
 
-export { createTemplate, getTemplates }
+async function getTemplatesNames() {
+  return await db.Template.findAll({
+    attributes: ['name']
+  })
+}
+
+export { addTemplate, getTemplates, getTemplatesNames }

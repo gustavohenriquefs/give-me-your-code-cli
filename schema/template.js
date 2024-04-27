@@ -16,4 +16,4 @@ const Template = (db) => db.sequelize.define('templates', {
     }
 })
  
-export default Template
+export { Template }
