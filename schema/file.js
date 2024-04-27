@@ -10,7 +10,8 @@ const File = (db) => db.sequelize.define('files', {
     allowNull: false,
     references: {
       model: 'templates',
-      key: 'id'
+      key: 'id',
+      onDelete: 'CASCADE'
     }
   },
   name: {
@@ -20,7 +21,7 @@ const File = (db) => db.sequelize.define('files', {
   content: {
     type: db.Sequelize.STRING,
     allowNull: false,
-  },
-});
+  }
+})
 
 export { File }
