@@ -1,21 +1,9 @@
-
-import { conf } from './index.js'
 import chalk from 'chalk'
-import { templateList } from '../db/templates.js'
 import { spawn, exec } from 'child_process'
 import tmp from 'tmp'
 import fs from 'fs/promises'
-import child_process from 'child_process'
 import inquirer from 'inquirer'
 import { addTemplate } from '../controllers/template.controller.js'
-
-const templateListKey = 'templates'
-
-function initTemplateList() {
-  conf.set(templateListKey, templateList)
-}
-
-initTemplateList()
 
 function add(options) {
   selectCodeEditor(options)
@@ -159,8 +147,12 @@ function addTemplateUsingVim(options) {
   })
 }
 
-function redirectToVsCode() {
-  exec('code ./tmp/template.cpp', (err, stdout, stderr) => {
+function redirectToVsCode(options) {
+  const { template, file } = options
+
+  const path = `./${template ? template : 'tmp'}/${file ? file : 'main.cpp'}`
+
+  exec(`code ${path}`, (err, stdout, stderr) => {
     if(err) {
       console.log(
         chalk.red('An error occurred: ', err)
@@ -187,7 +179,7 @@ function openSelectedEditor(editorName, options) {
   if(editorData.editor === 'vim') 
     addTemplateUsingVim(options)
   else if(editorData.editor === 'vscode') 
-    redirectToVsCode()
+    redirectToVsCode(options)
 
   if(editorData.needSaveCommand) {
     console.log(
