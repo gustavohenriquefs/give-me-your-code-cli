@@ -2,8 +2,8 @@
 import { conf } from './index.js'
 import chalk from 'chalk'
 import { templateList } from '../db/templates.js'
-import { spawn } from 'child_process'
-import tmp, { file } from 'tmp'
+import { spawn, exec } from 'child_process'
+import tmp from 'tmp'
 import fs from 'fs/promises'
 import child_process from 'child_process'
 import inquirer from 'inquirer'
@@ -160,14 +160,14 @@ function addTemplateUsingVim(options) {
 }
 
 function redirectToVsCode() {
-  const child = child_process.spawn('code', ['./tmp/template.cpp'], {
-    stdio: 'inherit'
-  })
+  exec('code ./tmp/template.cpp', (err, stdout, stderr) => {
+    if(err) {
+      console.log(
+        chalk.red('An error occurred: ', err)
+      )
+    }
 
-  child.on('exit', (e, code) => {
-    console.log(
-      chalk.blue.bold('Redirecting to VS Code...')
-    )
+    chalk.blue.bold('Redirecting to VsCode...')
   })
 }
 
@@ -192,7 +192,7 @@ function openSelectedEditor(editorName, options) {
   if(editorData.needSaveCommand) {
     console.log(
       chalk.yellow.bold(
-        'After saving the file, run the command: gmyc save-template <template-name>'
+        'After saving the file, run the command: gmyc save -t <template-name> -d <description> -f <file-name> to save the template'
       )
     )
   }

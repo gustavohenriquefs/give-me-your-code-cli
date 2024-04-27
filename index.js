@@ -17,9 +17,6 @@ program.command('add')
         .option('-t, --template <templateName>', 'template name')
         .option('-d, --description <description>', 'description')
         .option('-f, --file <fileName>', 'file name')
-        .action((options) => {
-                console.log(options)
-                add(options)
-        })
+        .action((options) => add(options))
 
 program.parse()
