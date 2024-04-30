@@ -7,9 +7,9 @@ const templateListKey = 'templates'
 
 async function setTemplateList() {
   await getTemplatesNames().then(templates => {
-    if(templates.length) {
-      conf.set(templateListKey, templates)
-    } else {
+    conf.set(templateListKey, templates)
+    
+    if(!templates.length) {
       console.log(chalk.red('No items found.'));
     }
   })
