@@ -1,6 +1,5 @@
 import { addFile } from './file.controller.js'
 import { db } from '../db.config.js'
-import { or } from 'sequelize'
 
 async function addTemplate(data) {
   const transaction = await db.sequelize.transaction()
