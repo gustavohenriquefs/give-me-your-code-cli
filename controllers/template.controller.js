@@ -37,6 +37,24 @@ async function getTemplates() {
   return await db.Template.findAll()
 }
 
+async function getTemplateByName(name) {
+  const templateData = await db.Template.findOne({
+    where: {
+      name: name
+    },
+    include: [{
+      model: db.File,
+      as: 'files'
+    }]
+  })
+
+  if(!templateData) {
+    throw new Error('Template not found')
+  }
+
+  return templateData
+}
+
 async function getTemplatesNames() {
   return await db.Template.findAll({
     attributes: ['name'],
@@ -44,4 +62,4 @@ async function getTemplatesNames() {
   })
 }
 
-export { addTemplate, getTemplates, getTemplatesNames }
+export { addTemplate, getTemplates, getTemplatesNames, getTemplateByName }
