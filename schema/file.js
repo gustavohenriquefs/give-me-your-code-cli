@@ -5,15 +5,6 @@ const File = (db) => db.sequelize.define('files', {
     allowNull: false,
     primaryKey: true
   },
-  templateId: {
-    type: db.Sequelize.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'templates',
-      key: 'id',
-      onDelete: 'CASCADE'
-    }
-  },
   name: {
     type: db.Sequelize.STRING,
     allowNull: false,

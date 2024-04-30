@@ -3,6 +3,7 @@ import { program } from 'commander'
 
 import { list } from './commands/list.js'
 import { add } from './commands/add.js'
+import { create } from './commands/create.js'
 import { db } from './db.config.js'
 import chalk from 'chalk';
 
@@ -24,5 +25,9 @@ program.command('add')
         .option('-d, --description <description>', 'description')
         .option('-f, --file <fileName>', 'file name')
         .action((options) => add(options))
+
+program.command('create')
+        .description('Create a new template')
+        .action(() => create())
 
 program.parse()
