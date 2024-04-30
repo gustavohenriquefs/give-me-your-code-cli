@@ -6,9 +6,13 @@ import inquirer from 'inquirer';
 const templateListKey = 'templates'
 
 async function setTemplateList() {
-  await getTemplatesNames().then(templates => 
+  await getTemplatesNames().then(templates => {
     conf.set(templateListKey, templates)
-  )
+    
+    if(!templates.length) {
+      console.log(chalk.red('No items found.'));
+    }
+  })
 }
 
 function list() {

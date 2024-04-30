@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { spawn, exec } from 'child_process'
 import tmp from 'tmp'
-import fs from 'fs/promises'
+import fs from 'fs'
 import inquirer from 'inquirer'
 import { addTemplate } from '../controllers/template.controller.js'
 
@@ -25,7 +25,7 @@ function getEditors() {
 }
 
 function spawnVimEditor(filePath, vimPath) {
-  const command = `${vimPath.path }\\${vimPath.editor}.exe`
+  const command = vimPath.path
   return spawn(command, [filePath], {
     stdio: 'inherit'
   })
@@ -56,7 +56,7 @@ function saveTemplate(fileData) {
 }
 
 function processFileDataVim(filePath, options) {
-  fs.readFile(filePath, 'utf8')
+  fs.promises.readFile(filePath, 'utf8')
     .then((data) => {
       const templateData = {}
 
@@ -82,7 +82,7 @@ function closeEditedFileVim(childProcess, filePath, options) {
 }
 
 function getVimOrNvimPathWin() {
-  const envPath = process.env.PATH
+  const envPath = process.env.PATH || ''
   const vimPath = envPath.split(';')
     .find(path => path.includes('vim'))
 
@@ -90,7 +90,7 @@ function getVimOrNvimPathWin() {
 
   return { 
     editor: isNeovim ? 'nvim' : 'vim', 
-    path: vimPath 
+    path: `${vimPath}\\${vimPath.editor}.exe`
   }
 }
 
@@ -98,17 +98,11 @@ function getVimOrNvimLinux() {
   const vimPath = '/usr/bin/vim'
   const nvimPath = '/usr/bin/nvim'
 
-  if(fs.existsSync(nvimPath)) {
-    return {
-      editor: 'nvim',
-      path: nvimPath
-    }
-  }
+  const isVim = fs.existsSync(vimPath)
 
-  return {
-    editor: 'vim',
-    path: vimPath
-  }
+  return isVim ? 
+    { editor: 'vim', path: `${vimPath}` } : 
+    { editor: 'nvim', path: nvimPath }
 }
 
 function getVimPath() {

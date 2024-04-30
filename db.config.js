@@ -12,7 +12,7 @@ const sequelize = new Sequelize({
     storage: path.resolve(__dirname, './db.sqlite'),
     logging: false
 });
- 
+
 const db = {};
 
 db.sequelize = sequelize;
@@ -20,5 +20,11 @@ db.Sequelize = Sequelize;
 
 db.Template = Template({ sequelize, Sequelize });
 db.File = File({ sequelize, Sequelize });
+
+db.Template.hasMany(db.File, 
+    { as: 'files', foreignKey: 'templateId' }
+)
+
+db.File.belongsTo(db.Template)
 
 export { db }
