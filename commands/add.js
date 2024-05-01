@@ -25,8 +25,7 @@ function getEditors() {
 }
 
 function spawnVimEditor(filePath, vimPath) {
-  const command = vimPath.path
-  return spawn(command, [filePath], {
+  return spawn(vimPath, [filePath], {
     stdio: 'inherit'
   })
 }
@@ -88,10 +87,7 @@ function getVimOrNvimPathWin() {
 
   const isNeovim = vimPath.includes('Neovim')
 
-  return { 
-    editor: isNeovim ? 'nvim' : 'vim', 
-    path: `${vimPath}\\${vimPath.editor}.exe`
-  }
+  return `${vimPath}\\${isNeovim ? 'nvim' : 'vim'}.exe`
 }
 
 function getVimOrNvimLinux() {
@@ -100,12 +96,10 @@ function getVimOrNvimLinux() {
 
   const isVim = fs.existsSync(vimPath)
 
-  return isVim ? 
-    { editor: 'vim', path: `${vimPath}` } : 
-    { editor: 'nvim', path: nvimPath }
+  return isVim ? vimPath : nvimPath
 }
 
-function getVimPath() {
+function getVimPath() { 
   if(process.platform === 'win32') {
     return getVimOrNvimPathWin()
   } 
