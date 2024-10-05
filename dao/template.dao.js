@@ -57,7 +57,7 @@ async function getTemplateByName(name) {
 
 async function getTemplatesNames() {
   return await db.Template.findAll({
-    attributes: ['name'],
+    attributes: ['name', 'id'],
     order: [['createdAt', 'ASC']]
   })
 }

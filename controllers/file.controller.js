@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { getFileByTemplateId } from '../dao/file.dao.js'
 
 export function createFolder(folderName) {
   if (!fs.existsSync(folderName)) {
@@ -13,4 +14,8 @@ export function createFiles(files, folderName) {
 
     fs.writeFileSync(filePath, file.content)
   })
+}
+
+export function getFilesByTemplateId(templateId) {
+  return getFileByTemplateId(templateId)
 }

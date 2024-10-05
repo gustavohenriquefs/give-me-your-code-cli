@@ -12,4 +12,13 @@ async function getFiles() {
   return await db.File.findAll()
 }
 
-export { addFile }
+async function getFileByTemplateId(templateId) {
+  return await db.File.findAll({
+    attributes: ['name', 'content', 'id'],
+    where: {
+      templateId
+    }
+  })
+}
+
+export { addFile, getFiles, getFileByTemplateId }

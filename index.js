@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import { program } from 'commander'
 
-import { list } from './commands/list.js'
+import { list, listAll } from './commands/list.js'
 import { add } from './commands/add.js'
 import { save } from './commands/save.js'
 import { use } from './commands/use.js'
@@ -20,6 +20,10 @@ await db.sequelize.sync()
 program.command('list')
         .description('List all templates')
         .action(list)
+
+program.command('ls')
+        .description('List all templates')
+        .action(listAll)
 
 program.command('add')
         .description('Add a new template')
