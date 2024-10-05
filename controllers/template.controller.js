@@ -11,12 +11,12 @@ async function addTemplate(data) {
     templateCreated = await db.Template.create({
       name: data.name,
       description: data.description
-    })
+    }, { transaction })
 
     await Promise.all(data.files.map(async file => {
       file.templateId = templateCreated.id
 
-      const fileCreated = await addFile(file)
+      const fileCreated = await addFile(file, transaction)
       
       files.push(fileCreated)
     }));
@@ -62,4 +62,33 @@ async function getTemplatesNames() {
   })
 }
 
-export { addTemplate, getTemplates, getTemplatesNames, getTemplateByName }
+async function updateTemplate(data) {
+  const transaction = await db.sequelize.transaction()
+
+  try {
+    const template = await db.Template.findOne({
+      where: { name: data.name }
+    }, { transaction })
+
+    if(data.name) template.name = data.name
+    if(data.description) template.description = data.description
+
+    await template.save({ transaction })
+
+    await transaction.commit()
+
+    return template
+  } catch (error) {
+    await transaction.rollback()
+
+    throw error
+  }
+}
+
+export { 
+  addTemplate, 
+  getTemplates, 
+  getTemplatesNames, 
+  getTemplateByName, 
+  updateTemplate
+}

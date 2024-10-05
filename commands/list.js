@@ -1,7 +1,6 @@
 import { conf } from './index.js';
 import chalk from 'chalk';
 import { getTemplatesNames } from '../controllers/template.controller.js';
-import inquirer from 'inquirer';
 
 const templateListKey = 'templates'
 
@@ -31,30 +30,6 @@ function list() {
       })
     }
   })
-}
-
-function use() {
-  const templateListConf = conf.get('templates')
-  
-  if(templateListConf && templateListConf.length) {
-    const choices = templateListConf.map((task, index) => ({
-      name: `${index + 1}. ${task.name}`,
-      value: index
-    }));
-
-    inquirer.prompt([
-      {
-        type: 'list',
-        name: 'selected',
-        message: 'Choose a template:',
-        choices: choices
-      }
-    ]).then(answers => {
-      console.log(`You selected: ${templateListConf[answers.selected].name}`);
-    });
-  } else {
-    console.log(chalk.red('No items found.'))
-  }
 }
 
 export { list }
