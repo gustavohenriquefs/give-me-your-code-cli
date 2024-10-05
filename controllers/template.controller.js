@@ -1,94 +1,63 @@
-import { addFile } from './file.controller.js'
-import { db } from '../db.config.js'
+import inquirer from 'inquirer'
+import chalk from 'chalk'
 
-async function addTemplate(data) {
-  const transaction = await db.sequelize.transaction()
-   
-  try {
-    const files = []
-    let templateCreated = {}
+import { getTemplatesNames, getTemplateByName } from '../dao/template.dao.js'
+import { createFolder, createFiles } from '../controllers/file.controller.js'
 
-    templateCreated = await db.Template.create({
-      name: data.name,
-      description: data.description
-    }, { transaction })
+export async function selectTemplate() {
+  const templates = await getTemplatesNames()
 
-    await Promise.all(data.files.map(async file => {
-      file.templateId = templateCreated.id
+  if (!templates.length) {
+    console.log(
+      chalk.red('No items found.')
+    )
 
-      const fileCreated = await addFile(file, transaction)
-      
-      files.push(fileCreated)
-    }));
-
-    templateCreated.files = files
-
-    await transaction.commit()
-
-    return templateCreated
-  } catch (error) {
-    await transaction.rollback()
-
-    throw error
+    return Promise.resolve(null)
   }
+
+  const answer = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'selected',
+      message: 'Choose a template:',
+      choices: templates
+    }
+  ])
+
+  return answer.selected
 }
 
-async function getTemplates() {
-  return await db.Template.findAll()
-}
 
-async function getTemplateByName(name) {
-  const templateData = await db.Template.findOne({
-    where: {
-      name: name
-    },
-    include: [{
-      model: db.File,
-      as: 'files'
-    }]
-  })
+export async function useTemplateProcess() {
+  const templateSelected = await selectTemplate()
 
-  if(!templateData) {
+  if (!templateSelected) {
+    throw new Error('No template selected')
+  }
+
+  const templateData = await getTemplateByName(templateSelected)
+
+  if (!templateData) {
     throw new Error('Template not found')
   }
 
-  return templateData
+  createFolder(templateData.name)
+  createFiles(templateData.files, templateData.name)
 }
 
-async function getTemplatesNames() {
-  return await db.Template.findAll({
-    attributes: ['name'],
-    order: [['createdAt', 'ASC']]
-  })
-}
 
-async function updateTemplate(data) {
-  const transaction = await db.sequelize.transaction()
+export async function openTemplateInVim() {
+  const templateSelected = await selectTemplate()
 
-  try {
-    const template = await db.Template.findOne({
-      where: { name: data.name }
-    }, { transaction })
-
-    if(data.name) template.name = data.name
-    if(data.description) template.description = data.description
-
-    await template.save({ transaction })
-
-    await transaction.commit()
-
-    return template
-  } catch (error) {
-    await transaction.rollback()
-
-    throw error
+  if (!templateSelected) {
+    throw new Error('No template selected')
   }
-}
 
-export { 
-  addTemplate, 
-  getTemplates, 
-  getTemplatesNames, 
-  getTemplateByName, 
-  updateTemplate
+  const templateData = await getTemplateByName(templateSelected)
+
+  if (!templateData) {
+    throw new Error('Template not found')
+  }
+
+  addTemplateUsingVim()
 }

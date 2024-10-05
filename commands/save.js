@@ -1,4 +1,4 @@
-import { addTemplate } from '../controllers/template.controller.js'
+import { addTemplate } from '../dao/template.dao.js'
 import fs from 'fs'
 
 function getCurrentDirectoryBase() {

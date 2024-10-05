@@ -1,6 +1,6 @@
 import { conf } from './index.js';
 import chalk from 'chalk';
-import { getTemplatesNames } from '../controllers/template.controller.js';
+import { getTemplatesNames } from '../dao/template.dao.js';
 
 const templateListKey = 'templates'
 

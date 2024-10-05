@@ -3,7 +3,7 @@ import { spawn, exec } from 'child_process'
 import tmp from 'tmp'
 import fs from 'fs'
 import inquirer from 'inquirer'
-import { addTemplate } from '../controllers/template.controller.js'
+import { addTemplate } from '../dao/template.dao.js'
 
 function add(options) {
   selectCodeEditor(options)
