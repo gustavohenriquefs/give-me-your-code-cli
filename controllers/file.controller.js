@@ -1,15 +1,16 @@
-import { db } from '../db.config.js'
+import fs from 'fs'
+import path from 'path'
 
-async function addFile(data, transaction) {
-  return await db.File.create({
-    name: data.name,
-    content: data.content,
-    templateId: data.templateId
-  }, { transaction })
+export function createFolder(folderName) {
+  if (!fs.existsSync(folderName)) {
+    fs.mkdirSync(folderName)
+  }
 }
 
-async function getFiles() {
-  return await db.File.findAll()
-}
+export function createFiles(files, folderName) {
+  files.forEach(file => {
+    const filePath = path.join(folderName, file.name)
 
-export { addFile }
+    fs.writeFileSync(filePath, file.content)
+  })
+}
